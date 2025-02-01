@@ -5,7 +5,7 @@ import ScoreBoard from '@/components/ScoreBoard.vue'
 </script>
 
 <template>
-  <div class="main-container mx-auto">
+  <div class="main-container mx-auto mt-8">
     <v-row no-gutters>
       <v-col cols="4">
         <VocabularyStack />
@@ -25,5 +25,6 @@ import ScoreBoard from '@/components/ScoreBoard.vue'
   min-width: 800px;
   max-width: 1200px;
   width: 100%;
+  min-height: 600px;
 }
 </style>
