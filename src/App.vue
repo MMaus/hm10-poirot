@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import MainView from '@/views/MainView.vue'
+import { useTokenStore } from '@/stores/token'
 
-const token = ref('')
+const tokenStore = useTokenStore()
 const selectedCharacter = ref('Poirot')
 const characters = ['Poirot', 'Sherlock Holmes', 'Miss Marple']
 
@@ -35,13 +36,15 @@ const connect = () => {
       <v-spacer></v-spacer>
 
       <v-text-field
-        v-model="token"
+        v-model="tokenStore.token"
         label="Token"
         type="password"
         variant="outlined"
         density="compact"
         hide-details
       />
+
+      <v-btn color="success" variant="text" @click="tokenStore.saveToken">Save</v-btn>
 
       <v-btn color="primary" variant="text" @click="connect">Connect</v-btn>
     </v-app-bar>
