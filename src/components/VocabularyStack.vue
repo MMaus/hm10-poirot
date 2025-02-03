@@ -1,29 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const vocabularyWords = ref<string[]>([]);
-const newWord = ref('');
-const explanation = ref('Explanation of vocabulary');
+const vocabularyWords = ref<string[]>([])
+const newWord = ref('')
+const explanation = ref('Explanation of vocabulary')
 
 const addWord = () => {
   if (newWord.value.trim()) {
-    vocabularyWords.value.unshift(newWord.value.trim());
-    newWord.value = '';
+    vocabularyWords.value.unshift(newWord.value.trim())
+    newWord.value = ''
   }
-};
+}
 
 const removeWord = (index: number) => {
-  vocabularyWords.value.splice(index, 1);
+  vocabularyWords.value.splice(index, 1)
   // Reset explanation if we're removing the word that was being explained
-  if (explanation.value.startsWith('Explain ') && 
-      !vocabularyWords.value.includes(explanation.value.substring(8))) {
-    explanation.value = 'Explanation of vocabulary';
+  if (
+    explanation.value.startsWith('Explain ') &&
+    !vocabularyWords.value.includes(explanation.value.substring(8))
+  ) {
+    explanation.value = 'Explanation of vocabulary'
   }
-};
+}
 
 const showExplanation = (word: string) => {
-  explanation.value = `Explain ${word}`;
-};
+  explanation.value = `Explain ${word}`
+}
 </script>
 
 <template>
@@ -32,16 +34,20 @@ const showExplanation = (word: string) => {
     <v-card-text class="flex-grow-1 d-flex flex-column">
       <!-- Chip list area -->
       <div class="mb-4 chip-container">
-        <v-chip
-          v-for="(word, index) in vocabularyWords"
-          :key="index"
-          class="ma-1"
-          closable
-          @click="showExplanation(word)"
-          @click:close="removeWord(index)"
-        >
-          {{ word }}
-        </v-chip>
+        <v-chip-group>
+          <v-chip
+            v-for="(word, index) in vocabularyWords"
+            :key="index"
+            class="ma-1"
+            append-icon="mdi-close"
+            closeable
+            variant="outlined"
+            @click="showExplanation(word)"
+            @click:close="removeWord(index)"
+          >
+            {{ word }}
+          </v-chip>
+        </v-chip-group>
       </div>
 
       <!-- Explanation text area -->
@@ -61,12 +67,7 @@ const showExplanation = (word: string) => {
           @keyup.enter="addWord"
           class="flex-grow-1 mr-2"
         ></v-text-field>
-        <v-btn
-          color="primary"
-          @click="addWord"
-        >
-          Add
-        </v-btn>
+        <v-btn color="primary" @click="addWord"> Add </v-btn>
       </div>
     </v-card-text>
   </v-card>
