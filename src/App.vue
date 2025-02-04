@@ -25,11 +25,8 @@ const connect = () => {
           hide-details
           style="max-width: 160px; display: inline-block"
           class="ml-2 character-select"
-          menu-icon=""
+          menu-icon="mdi-menu-down"
         >
-          <template #prepend-inner>
-            <span class="text-h6">{{ selectedCharacter }}</span>
-          </template>
         </v-select>
       </v-toolbar-title>
 
