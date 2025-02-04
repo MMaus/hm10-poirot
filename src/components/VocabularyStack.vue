@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { errorMessages } from 'vue/compiler-sfc'
 
 const vocabularyWords = ref<string[]>([])
 const newWord = ref('')
@@ -12,8 +13,18 @@ const addWord = () => {
   }
 }
 
-const removeWord = (index: number) => {
-  vocabularyWords.value.splice(index, 1)
+const removeWord = (event: Event, index: number) => {
+  if (event.target instanceof HTMLElement) {
+    if (!event.target.classList.contains('mdi-close')) {
+      console.log('not close icon')
+      return
+    }
+  }
+  console.log('remove word', index)
+  const new_words = vocabularyWords.value.filter((word, i) => i !== index)
+  console.log('new words', new_words)
+  vocabularyWords.value = new_words
+  event.stopPropagation()
   // Reset explanation if we're removing the word that was being explained
   if (
     explanation.value.startsWith('Explain ') &&
@@ -23,8 +34,13 @@ const removeWord = (index: number) => {
   }
 }
 
-const showExplanation = (word: string) => {
-  explanation.value = `Explain ${word}`
+const handleChipClick = (e: Event, word: string) => {
+  if (vocabularyWords.value.includes(word)) {
+    console.log('show explanation', word, e)
+    explanation.value = `Explain ${word}`
+  } else {
+    explanation.value = 'Explanation of vocabulary'
+  }
 }
 </script>
 
@@ -34,16 +50,16 @@ const showExplanation = (word: string) => {
     <v-card-text class="flex-grow-1 d-flex flex-column">
       <!-- Chip list area -->
       <div class="mb-4 chip-container">
-        <v-chip-group>
+        <v-chip-group column>
           <v-chip
             v-for="(word, index) in vocabularyWords"
-            :key="index"
+            :key="word"
             class="ma-1"
             append-icon="mdi-close"
             closeable
             variant="outlined"
-            @click="showExplanation(word)"
-            @click:close="removeWord(index)"
+            @click.close="removeWord($event, index)"
+            @click="(e: Event) => handleChipClick(e, word)"
           >
             {{ word }}
           </v-chip>
