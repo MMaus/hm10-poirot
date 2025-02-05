@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { errorMessages } from 'vue/compiler-sfc'
+import { useVocabularyExplainer } from '@/composables/VocabularyExplainer'
 
 const vocabularyWords = ref<string[]>([])
 const newWord = ref('')
 const explanation = ref('Explanation of vocabulary')
+const vocabularyExplainer = useVocabularyExplainer()
 
 const addWord = () => {
   if (newWord.value.trim()) {
@@ -34,10 +35,10 @@ const removeWord = (event: Event, index: number) => {
   }
 }
 
-const handleChipClick = (e: Event, word: string) => {
+const handleChipClick = async (e: Event, word: string) => {
   if (vocabularyWords.value.includes(word)) {
     console.log('show explanation', word, e)
-    explanation.value = `Explain ${word}`
+    explanation.value = await vocabularyExplainer.explain(word, true)
   } else {
     explanation.value = 'Explanation of vocabulary'
   }
