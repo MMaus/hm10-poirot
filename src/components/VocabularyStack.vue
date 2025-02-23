@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useVocabularyExplainer } from '@/composables/VocabularyExplainer'
+import VocabularyChip from '@/components/VocabularyChip.vue'
+
+type ChipState = 'clear' | 'green' | 'yellow'
 
 const vocabularyWords = ref<string[]>([])
+const chipStates = ref<Map<string, ChipState>>(new Map())
 const newWord = ref('')
 const explanation = ref('Explanation of vocabulary')
 const vocabularyExplainer = useVocabularyExplainer()
@@ -35,13 +39,15 @@ const removeWord = (event: Event, index: number) => {
   }
 }
 
-const handleChipClick = async (e: Event, word: string) => {
-  if (vocabularyWords.value.includes(word)) {
-    console.log('show explanation', word, e)
-    explanation.value = await vocabularyExplainer.explain(word, true)
-  } else {
+const handleChipStateChange = async (word: string, state: ChipState) => {
+  if (!vocabularyWords.value.includes(word)) {
     explanation.value = 'Explanation of vocabulary'
+    return
   }
+
+  chipStates.value.set(word, state)
+  console.log('show explanation', word)
+  explanation.value = await vocabularyExplainer.explain(word, true, state)
 }
 </script>
 
@@ -51,19 +57,14 @@ const handleChipClick = async (e: Event, word: string) => {
     <v-card-text class="flex-grow-1 d-flex flex-column">
       <!-- Chip list area -->
       <div class="mb-4 chip-container">
-        <v-chip-group column>
-          <v-chip
+        <v-chip-group column multiple>
+          <VocabularyChip
             v-for="(word, index) in vocabularyWords"
             :key="word"
-            class="ma-1"
-            append-icon="mdi-close"
-            closeable
-            variant="outlined"
-            @click.close="removeWord($event, index)"
-            @click="(e: Event) => handleChipClick(e, word)"
-          >
-            {{ word }}
-          </v-chip>
+            :word="word"
+            @remove="removeWord($event, index)"
+            @selected="handleChipStateChange"
+          />
         </v-chip-group>
       </div>
 
