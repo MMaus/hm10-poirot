@@ -4,19 +4,26 @@ import { ref } from 'vue'
 import { useLlmService } from '@/services/llmService'
 import type { ChatStep } from '@/types/chat'
 import { useDetectiveStore } from '@/stores/detective'
+import { usePuzzleFactory } from '@/services/puzzleFactory'
+import type { Puzzle } from '@/puzzles/Puzzle'
 
 const userInput = ref('')
 const steps = ref<ChatStep[]>([])
 const showWelcome = ref(true)
-const { sendPrompt, isLoading, lastResponse } = useLlmService()
+const llmService = useLlmService()
+const { isLoading } = llmService
 const detectiveStore = useDetectiveStore()
+const puzzleFactory = usePuzzleFactory()
+const currentPuzzle = ref<Puzzle | null>(null)
 
 const startAdventure = () => {
   showWelcome.value = false
+  currentPuzzle.value = puzzleFactory.createPuzzle(detectiveStore.selectedDetective, llmService)
+  
   const systemStep: ChatStep = {
     id: crypto.randomUUID(),
     type: 'system',
-    message: 'Starting the puzzle',
+    message: currentPuzzle.value.getFirstResponse(),
     timestamp: Date.now()
   }
   steps.value.push(systemStep)
@@ -35,7 +42,7 @@ const submitDeduction = async () => {
   steps.value.push(userStep)
   
   // Get LLM response
-  const response = await sendPrompt(userInput.value)
+  const response = await llmService.sendPrompt(userInput.value)
   
   // Add LLM response
   const llmStep: ChatStep = {
