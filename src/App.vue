@@ -2,10 +2,12 @@
 import { ref } from 'vue'
 import MainView from '@/views/MainView.vue'
 import { useTokenStore } from '@/stores/token'
+import { useDetectiveStore } from '@/stores/detective'
+import type { Detective } from '@/stores/detective'
 
 const tokenStore = useTokenStore()
-const selectedCharacter = ref('Poirot')
-const characters = ['Poirot', 'Sherlock Holmes', 'Miss Marple']
+const detectiveStore = useDetectiveStore()
+const characters: Detective[] = ['Poirot', 'Sherlock Holmes', 'Miss Marple']
 
 const connect = () => {
   console.log('connect')
@@ -18,7 +20,7 @@ const connect = () => {
       <v-toolbar-title
         >Learn English with
         <v-select
-          v-model="selectedCharacter"
+          v-model="detectiveStore.selectedDetective"
           :items="characters"
           density="compact"
           variant="plain"
